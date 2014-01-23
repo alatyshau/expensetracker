@@ -1,7 +1,68 @@
+////////
+// External dependencies for the build script -- http://www.gradle.org/docs/current/userguide/organizing_build_logic.html#sec:external_dependencies
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC1"
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'spring-boot'
+apply plugin: 'war'
+// ~External dependencies
+////////
 
-// http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
+
+////////
+// Dependency Management Basics -- http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web:1.0.0.RC1"
+    compile "org.springframework:spring-webmvc:4.0.0.RELEASE"
+    compile "org.springframework:spring-jdbc:4.0.0.RELEASE"
+    compile "org.springframework:spring-tx:4.0.0.RELEASE"
+    //compile "org.springframework.security:spring-security-core:3.2.0.RELEASE"
+    //compile "org.springframework.security:spring-security-web:3.2.0.RELEASE"
+    //compile "org.springframework.security:spring-security-config:3.2.0.RELEASE"
+    //compile "org.springframework.security:spring-security-taglibs:3.2.0.RELEASE"
+    //compile "org.apache.tomcat.embed:tomcat-embed-core:7.0.47"
+    //compile "org.apache.tomcat.embed:tomcat-embed-jasper:7.0.47"
+    compile "mysql:mysql-connector-java:5.1.27"
+    compile "javax.servlet:jstl:1.2"
+    compile "javax.validation:validation-api:1.0.0.GA"
+    compile "org.apache.bval:bval-jsr303:0.5"
+
+    testCompile "junit:junit:4.11"
+}
+// ~Dependency Management
+////////
+
+
+///////
+// The entire web-application will be packed into self-executable JAR file.
+// See Java Plugin -- http://www.gradle.org/docs/current/userguide/java_plugin.html
+war {
+    baseName = 'toptal-expensetracker'
+    version =  '0.1.0'
+}
+// ~JAR file packing
+///////
+
+
+////////
+// The Gradle Wrapper -- http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
 task wrapper(type: Wrapper) {
   gradleVersion = '1.10'
 }
+// ~The Gradle Wrapper
+////////

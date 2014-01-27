@@ -9,7 +9,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><spring:message code="welcome.helloWorld" /></title>
-<script type="text/javascript" language="javascript" src="com.toptal.expensetracker.gwt.ExpenseTracker/com.toptal.expensetracker.gwt.ExpenseTracker.nocache.js"></script>
+<script type="text/javascript" language="javascript" src="expenseTracker/expenseTracker.nocache.js"></script>
 </head>
 <body>
 	Here GWT should be inserted

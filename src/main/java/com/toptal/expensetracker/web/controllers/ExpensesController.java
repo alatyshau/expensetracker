@@ -21,7 +21,8 @@ public class ExpensesController
 	@ResponseBody
 	public List<ExpenseDTO> getExpenses()
 	{
-		return Arrays.asList(ExpenseDTO.sample());
+		return Arrays
+				.asList(ExpenseDTO.sample(1L), ExpenseDTO.sample(2L), ExpenseDTO.sample(3L), ExpenseDTO.sample(4L));
 	}
 
 	@RequestMapping(value = "/weekly", method = RequestMethod.GET)

@@ -43,15 +43,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception
 	{
-		http.authorizeRequests()
-				//
-				.antMatchers("/css/**", "/images/**", "/js/**", "/api/login", "/api/user/**", "/welcome", "/",
-						"/com.toptal.expensetracker.gwt.ExpenseTracker/**").permitAll() //
+		final String[] permitAllList = new String[] { "/css/**", "/images/**", "/js/**", "/api/login/**",
+				"/api/user/**", "/welcome", "/", "/expenseTracker/**" };
+		http.authorizeRequests() //
+				.antMatchers(permitAllList).permitAll() //
 				.antMatchers("/admin/**").hasRole("ADMIN") //
 				.antMatchers("/api/**").authenticated() //
 				.anyRequest().denyAll();
 
-		http.headers().frameOptions().disable();
+		http.headers().disable();
+		http.csrf().disable();
 	}
 
 	@Bean

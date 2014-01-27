@@ -1,19 +1,14 @@
 package com.toptal.expensetracker.gwt.client;
 
-import java.util.List;
-
-import org.fusesource.restygwt.client.Method;
-import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.Resource;
 import org.fusesource.restygwt.client.RestServiceProxy;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.toptal.expensetracker.gwt.client.data.ExpenseDTO;
 import com.toptal.expensetracker.gwt.client.services.ExpenseTrackerService;
+import com.toptal.expensetracker.gwt.client.services.UserService;
 
 public class ExpenseTrackerEntryPoint implements EntryPoint
 {
@@ -21,24 +16,19 @@ public class ExpenseTrackerEntryPoint implements EntryPoint
 	@Override
 	public void onModuleLoad()
 	{
-		final ExpenseTrackerService service = GWT.create(ExpenseTrackerService.class);
-		final Resource resource = new Resource(GWT.getHostPageBaseURL() + "api/expenses");
-		((RestServiceProxy) service).setResource(resource);
+		final Resource resource = new Resource(GWT.getHostPageBaseURL() + "api");
+		final ServiceBus serviceBus = new ServiceBus();
 
-		service.getExpenses(new MethodCallback<List<ExpenseDTO>>()
-		{
-			@Override
-			public void onSuccess(final Method method, final List<ExpenseDTO> receipt)
-			{
-				RootPanel.get().add(new Label("got receipt: " + receipt.get(0).description));
-			}
+		serviceBus.expenseTrackerService = GWT.create(ExpenseTrackerService.class);
+		((RestServiceProxy) serviceBus.expenseTrackerService).setResource(resource);
 
-			@Override
-			public void onFailure(final Method method, final Throwable exception)
-			{
-				Window.alert("Error: " + exception);
-			}
-		});
+		serviceBus.userService = GWT.create(UserService.class);
+		((RestServiceProxy) serviceBus.userService).setResource(resource);
+
+		final HandlerManager eventBus = new HandlerManager(null);
+
+		final AppController appController = new AppController(serviceBus, eventBus);
+		appController.go(RootPanel.get());
 	}
 
 }

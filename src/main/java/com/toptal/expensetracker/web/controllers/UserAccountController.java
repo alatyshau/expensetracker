@@ -8,9 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,10 +26,9 @@ public class UserAccountController
 
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public UserDTO createUser(final UserDTO userDTO)
+	public UserDTO createUser(@RequestBody final UserDTO userDTO)
 	{
-		final UserDetails existingUser = this.userDetailsManager.loadUserByUsername(userDTO.getEmail());
-		if (existingUser != null)
+		if (this.userDetailsManager.userExists(userDTO.getEmail()))
 		{
 			throw new IllegalArgumentException("Such email has been already registered: " + userDTO.getEmail());
 		}

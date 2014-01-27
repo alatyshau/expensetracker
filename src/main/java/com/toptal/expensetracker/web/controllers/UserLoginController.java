@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -26,9 +27,22 @@ public class UserLoginController
 	@Autowired
 	private LogoutHandler logoutHandler;
 
-	@RequestMapping(value = "/api/login"/* , method = RequestMethod.POST */)
+	@RequestMapping(value = "/api/login", method = RequestMethod.POST)
 	@ResponseBody
 	public UserDTO login(@RequestParam final String email, @RequestParam final String password,
+			final HttpServletRequest request)
+	{
+
+		final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
+		token.setDetails(new WebAuthenticationDetails(request));
+		final Authentication authentication = this.authenticationManager.authenticate(token);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		return new UserDTO(email);
+	}
+
+	@RequestMapping(value = "/api/login", method = RequestMethod.GET)
+	@ResponseBody
+	public UserDTO loginTEMP(@RequestParam final String email, @RequestParam final String password,
 			final HttpServletRequest request)
 	{
 

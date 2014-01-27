@@ -60,6 +60,7 @@ dependencies {
     compile "javax.validation:validation-api:1.0.0.GA"
     compile "org.apache.bval:bval-jsr303:0.5"
     compile "org.fusesource.restygwt:restygwt:1.3"
+    compile "org.jboss.resteasy:jaxrs-api:3.0.6.Final"
 
     testCompile "junit:junit:4.11"
 }

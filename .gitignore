@@ -2,6 +2,7 @@
 bin/
 build/
 war/
+gwt-unitCache/
 .classpath
 .project
 .settings

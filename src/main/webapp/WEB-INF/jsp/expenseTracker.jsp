@@ -9,8 +9,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><spring:message code="welcome.helloWorld" /></title>
+<script type="text/javascript" language="javascript" src="com.toptal.expensetracker.gwt.ExpenseTracker/com.toptal.expensetracker.gwt.ExpenseTracker.nocache.js"></script>
 </head>
 <body>
-Here GWT should be inserted
+	Here GWT should be inserted
+	<!-- OPTIONAL: include this if you want history support -->
+	<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1'
+		style="position: absolute; width: 0; height: 0; border: 0"></iframe>
 </body>
 </html>

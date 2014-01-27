@@ -45,11 +45,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 	{
 		http.authorizeRequests()
 				//
-				.antMatchers("/css/**", "/images/**", "/js/**", "/api/login", "/api/user/**", "/welcome", "/")
-				.permitAll() //
+				.antMatchers("/css/**", "/images/**", "/js/**", "/api/login", "/api/user/**", "/welcome", "/",
+						"/com.toptal.expensetracker.gwt.ExpenseTracker/**").permitAll() //
 				.antMatchers("/admin/**").hasRole("ADMIN") //
 				.antMatchers("/api/**").authenticated() //
 				.anyRequest().denyAll();
+
+		http.headers().frameOptions().disable();
 	}
 
 	@Bean

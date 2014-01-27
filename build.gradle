@@ -2,18 +2,19 @@
 // External dependencies for the build script -- http://www.gradle.org/docs/current/userguide/organizing_build_logic.html#sec:external_dependencies
 buildscript {
     repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url 'https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/' }
         mavenCentral()
     }
-    //dependencies {
-        //classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC1"
-    //}
+    
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.3'
+    }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
-//apply plugin: 'spring-boot'
 apply plugin: 'war'
+apply plugin: 'gwt'
 
 eclipse.classpath.file {
     // Classpath entry for Eclipse which changes the order of classpathentries; otherwise no sources for 3rd party jars are shown
@@ -58,11 +59,22 @@ dependencies {
     compile "javax.servlet:jstl:1.2"
     compile "javax.validation:validation-api:1.0.0.GA"
     compile "org.apache.bval:bval-jsr303:0.5"
+    compile "org.fusesource.restygwt:restygwt:1.3"
 
     testCompile "junit:junit:4.11"
 }
 // ~Dependency Management
 ////////
+
+
+///////
+// See GWT Plugin -- https://github.com/steffenschaefer/gwt-gradle-plugin
+gwt {
+    gwtVersion='2.5.1'
+    modules 'com.toptal.expensetracker.gwt.ExpenseTracker'
+}
+// ~GWT Plugin
+///////
 
 
 ///////

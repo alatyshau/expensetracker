@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class AdminController
 {
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String viewExpenseTracker()
+	{
+		return "expenseTracker";
+	}
+
 	@RequestMapping(value = "/welcome", method = RequestMethod.GET)
 	public String viewWelcomePage()
 	{

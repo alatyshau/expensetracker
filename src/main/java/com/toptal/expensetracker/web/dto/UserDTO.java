@@ -3,6 +3,18 @@ package com.toptal.expensetracker.web.dto;
 public class UserDTO
 {
 	private String email;
+	private String password;
+
+	public UserDTO()
+	{
+		super();
+	}
+
+	public UserDTO(final String email)
+	{
+		super();
+		this.email = email;
+	}
 
 	public String getEmail()
 	{
@@ -14,17 +26,19 @@ public class UserDTO
 		this.email = email;
 	}
 
+	public String getPassword()
+	{
+		return this.password;
+	}
+
+	public void setPassword(final String password)
+	{
+		this.password = password;
+	}
+
 	@Override
 	public String toString()
 	{
 		return "UserDTO [email=" + this.email + "]";
 	}
-
-	public static UserDTO sample(final String email)
-	{
-		final UserDTO userDTO = new UserDTO();
-		userDTO.setEmail(email);
-		return userDTO;
-	}
-
 }

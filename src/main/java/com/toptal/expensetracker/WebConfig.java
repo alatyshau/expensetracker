@@ -28,7 +28,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan("com.toptal.expensetracker.web")
 @EnableWebMvc
 @PropertySource("classpath:/web.properties")
-public class WebMvcConfiguration extends WebMvcConfigurerAdapter
+public class WebConfig extends WebMvcConfigurerAdapter
 {
 	// @Override
 	// public void addViewControllers(ViewControllerRegistry registry) {

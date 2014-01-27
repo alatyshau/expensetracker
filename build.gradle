@@ -14,6 +14,15 @@ apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 //apply plugin: 'spring-boot'
 apply plugin: 'war'
+
+eclipse.classpath.file {
+    // Classpath entry for Eclipse which changes the order of classpathentries; otherwise no sources for 3rd party jars are shown
+    withXml { xml ->
+        def node = xml.asNode()
+        node.remove( node.find { it.@path == 'org.eclipse.jst.j2ee.internal.web.container' } )
+        node.appendNode( 'classpathentry', [ kind: 'con', path: 'org.eclipse.jst.j2ee.internal.web.container', exported: 'true'])
+    }
+}
 // ~External dependencies
 ////////
 
@@ -38,8 +47,8 @@ dependencies {
     compile "org.springframework:spring-jdbc:3.2.6.RELEASE"
     compile "org.springframework:spring-tx:3.2.6.RELEASE"
     //compile "org.springframework.security:spring-security-core:3.2.0.RELEASE"
-    //compile "org.springframework.security:spring-security-web:3.2.0.RELEASE"
-    //compile "org.springframework.security:spring-security-config:3.2.0.RELEASE"
+    compile "org.springframework.security:spring-security-web:3.2.0.RELEASE"
+    compile "org.springframework.security:spring-security-config:3.2.0.RELEASE"
     //compile "org.springframework.security:spring-security-taglibs:3.2.0.RELEASE"
     //compile "org.apache.tomcat.embed:tomcat-embed-core:7.0.47"
     //compile "org.apache.tomcat.embed:tomcat-embed-jasper:7.0.47"

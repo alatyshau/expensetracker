@@ -35,7 +35,7 @@ public class LoginResultDTO
 	{
 		final LoginResultDTO loginResultDTO = new LoginResultDTO();
 		loginResultDTO.setToken("xcdsd3eqwdwdw");
-		loginResultDTO.setUser(UserDTO.sample(email));
+		loginResultDTO.setUser(new UserDTO(email));
 		return loginResultDTO;
 	}
 }

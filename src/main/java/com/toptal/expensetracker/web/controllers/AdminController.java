@@ -11,8 +11,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class AdminController
 {
+	@RequestMapping(value = "/welcome", method = RequestMethod.GET)
+	public String viewWelcomePage()
+	{
+		return "welcome";
+	}
+
 	@RequestMapping(value = "/admin", method = RequestMethod.GET)
-	public String viewWelcomePage(final Model model, final HttpServletRequest request)
+	public String viewAdminPage(final Model model, final HttpServletRequest request)
 	{
 		final Cookie[] cookies = request.getCookies();
 		final StringBuilder cookiesString = new StringBuilder();

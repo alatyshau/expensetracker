@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.toptal.expensetracker.web.dto.ExpenseDTO;
+import com.toptal.expensetracker.web.dto.WeeklyExpensesDTO;
 
 @Controller
 @RequestMapping("/api/expenses")
@@ -21,6 +22,14 @@ public class ExpensesController
 	public List<ExpenseDTO> getExpenses()
 	{
 		return Arrays.asList(ExpenseDTO.sample());
+	}
+
+	@RequestMapping(value = "/weekly", method = RequestMethod.GET)
+	@ResponseBody
+	public List<WeeklyExpensesDTO> getWeeklyStatistics()
+	{
+		return Arrays.asList(WeeklyExpensesDTO.sample(0, 222), WeeklyExpensesDTO.sample(1, 500),
+				WeeklyExpensesDTO.sample(2, 150), WeeklyExpensesDTO.sample(3, 78));
 	}
 
 	@RequestMapping(value = "/{expenseId}", method = RequestMethod.GET)
@@ -51,4 +60,5 @@ public class ExpensesController
 	{
 		return ExpenseDTO.sample(expenseId);
 	}
+
 }

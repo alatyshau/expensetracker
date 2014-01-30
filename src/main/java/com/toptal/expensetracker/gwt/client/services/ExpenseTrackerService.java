@@ -11,7 +11,6 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
 
 import com.toptal.expensetracker.gwt.client.data.ExpenseDTO;
-import com.toptal.expensetracker.gwt.client.data.WeeklyExpensesDTO;
 
 @Path("/api")
 public interface ExpenseTrackerService extends RestService
@@ -20,10 +19,5 @@ public interface ExpenseTrackerService extends RestService
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/expenses")
 	public void getExpenses(MethodCallback<List<ExpenseDTO>> callback);
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/expenses/weekly")
-	public void getWeeklyStatistics(MethodCallback<List<WeeklyExpensesDTO>> callback);
 
 }

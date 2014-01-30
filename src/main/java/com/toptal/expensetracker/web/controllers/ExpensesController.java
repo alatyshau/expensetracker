@@ -17,12 +17,32 @@ import com.toptal.expensetracker.web.dto.WeeklyExpensesDTO;
 @RequestMapping("/api/expenses")
 public class ExpensesController
 {
+	// @InitBinder()
+	// protected void initBinder(final WebDataBinder binder)
+	// {
+	// final DateFormat dateFormat = Utils.DEFAULT_DATE_TIME_FORMAT;
+	// binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,
+	// true));
+	// }
+
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public List<ExpenseDTO> getExpenses()
 	{
-		return Arrays
-				.asList(ExpenseDTO.sample(1L), ExpenseDTO.sample(2L), ExpenseDTO.sample(3L), ExpenseDTO.sample(4L));
+		return Arrays.asList(//
+				ExpenseDTO.sample(1L, "2014-01-01 12:45", "groceries"), //
+				ExpenseDTO.sample(1L, "2014-01-01 09:09", "milk"), //
+				ExpenseDTO.sample(1L, "2014-01-01 14:14", "toys"), //
+				ExpenseDTO.sample(1L, "2014-01-01 12:45", "new car"), //
+				ExpenseDTO.sample(1L, "2014-01-30 12:34", "apples"), //
+				ExpenseDTO.sample(1L, "2014-01-01 12:48", "groceries"), //
+				ExpenseDTO.sample(1L, "2014-01-28 11:11", "groceries"), //
+				ExpenseDTO.sample(1L, "2014-01-29 16:15", "groceries"), //
+				ExpenseDTO.sample(1L, "2014-01-28 08:45", "milk"), //
+				ExpenseDTO.sample(1L, "2014-01-11 00:37", "apples"), //
+				ExpenseDTO.sample(1L, "2014-01-11 20:45", "toys"), //
+				ExpenseDTO.sample(1L, "2014-01-11 17:45", "milk") //
+				);
 	}
 
 	@RequestMapping(value = "/weekly", method = RequestMethod.GET)

@@ -72,6 +72,9 @@ public class CreateAccountPresenter implements Presenter
 		bind();
 		container.clear();
 		container.add(this.display.asWidget());
+		this.display.getEmail().setValue(null);
+		this.display.getPassword().setValue(null);
+		this.display.getConfirmPassword().setValue(null);
 	}
 
 	private void doCreateAccount()
@@ -98,7 +101,7 @@ public class CreateAccountPresenter implements Presenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error creating account: check fields");
+				Window.alert("Error creating account: check fields\n" + String.valueOf(exception));
 			}
 		});
 	}

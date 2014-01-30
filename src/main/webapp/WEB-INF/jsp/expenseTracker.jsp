@@ -9,12 +9,27 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><spring:message code="welcome.helloWorld" /></title>
+<link rel="stylesheet" type="text/css" media="all" href="css/main.css" />
 <script type="text/javascript" language="javascript" src="expenseTracker/expenseTracker.nocache.js"></script>
 </head>
 <body>
-	Here GWT should be inserted
-	<!-- OPTIONAL: include this if you want history support -->
-	<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1'
-		style="position: absolute; width: 0; height: 0; border: 0"></iframe>
+    <center>
+        <div style="width: 800px; min-height: 100%; border-left: 1px solid #aaa; border-right: 1px solid #aaa;">
+            <table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td><img src="images/icon_256.png" width="64" height="64" border="0"> <span
+                        style="font-size: 16px; font-weight: bolder;">Expense Tracker</span></td>
+                    <td align="right"><div id="slot-header"></div></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><div id="slot-body"></div></td>
+                </tr>
+            </table>
+        </div>
+    </center>
+    <!-- OPTIONAL: include this if you want history support
+    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1'
+        style="position: absolute; width: 0; height: 0; border: 0"></iframe>
+         -->
 </body>
 </html>

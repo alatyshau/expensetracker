@@ -9,6 +9,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.toptal.expensetracker.gwt.client.services.ExpenseTrackerService;
 import com.toptal.expensetracker.gwt.client.services.UserService;
+import com.toptal.expensetracker.gwt.client.view.HeaderView;
 
 public class ExpenseTrackerEntryPoint implements EntryPoint
 {
@@ -27,8 +28,11 @@ public class ExpenseTrackerEntryPoint implements EntryPoint
 
 		final HandlerManager eventBus = new HandlerManager(null);
 
-		final AppController appController = new AppController(serviceBus, eventBus);
-		appController.go(RootPanel.get());
+		final HeaderView headerView = new HeaderView();
+		RootPanel.get("slot-header").add(headerView);
+
+		final AppController appController = new AppController(serviceBus, eventBus, headerView);
+		appController.go(RootPanel.get("slot-body"));
 	}
 
 }

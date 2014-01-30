@@ -109,4 +109,21 @@ public class WebConfig extends WebMvcConfigurerAdapter
 		return multipartResolver;
 	}
 
+	// @Override
+	// public void configureMessageConverters(final
+	// List<HttpMessageConverter<?>> converters)
+	// {
+	// converters.add(0, jsonConverter());
+	// }
+	//
+	// @Bean
+	// public MappingJacksonHttpMessageConverter jsonConverter()
+	// {
+	// final MappingJacksonHttpMessageConverter converter = new
+	// MappingJacksonHttpMessageConverter();
+	// converter.setObjectMapper(new CustomObjectMapper());
+	//
+	// return converter;
+	// }
+
 }

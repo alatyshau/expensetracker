@@ -83,6 +83,7 @@ public class LoginFormPresenter implements Presenter
 		container.clear();
 		container.add(this.display.asWidget());
 		this.display.getEmail().setValue(this.lastEmail);
+		this.display.getPassword().setValue(null);
 	}
 
 	private void doLogin()
@@ -102,7 +103,7 @@ public class LoginFormPresenter implements Presenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error logging in");
+				Window.alert("Error logging in\n" + String.valueOf(exception));
 			}
 		});
 	}

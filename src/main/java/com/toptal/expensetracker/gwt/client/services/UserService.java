@@ -34,5 +34,4 @@ public interface UserService extends RestService
 	@POST
 	@Path("/logout")
 	public void logout(MethodCallback<java.lang.Void> callback);
-
 }

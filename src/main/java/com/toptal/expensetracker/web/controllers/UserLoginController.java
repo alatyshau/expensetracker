@@ -27,6 +27,13 @@ public class UserLoginController
 	@Autowired
 	private LogoutHandler logoutHandler;
 
+	// @RequestMapping(value = "/api/today", method = RequestMethod.GET)
+	// @ResponseBody
+	// public String today()
+	// {
+	// return Utils.SPECIAL_DATE_TIME_FORMAT.format(new Date());
+	// }
+
 	@RequestMapping(value = "/api/login", method = RequestMethod.POST)
 	@ResponseBody
 	public UserDTO login(@RequestParam final String email, @RequestParam final String password,

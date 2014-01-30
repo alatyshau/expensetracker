@@ -1,12 +1,11 @@
 package com.toptal.expensetracker.gwt.client.presenter;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
@@ -15,7 +14,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.toptal.expensetracker.gwt.client.ServiceBus;
 import com.toptal.expensetracker.gwt.client.data.ExpenseDTO;
 import com.toptal.expensetracker.gwt.client.data.UserDTO;
-import com.toptal.expensetracker.gwt.client.event.UserLogOutEvent;
+import com.toptal.expensetracker.gwt.client.event.EditExpenseEvent;
+import com.toptal.expensetracker.gwt.client.event.RemoveExpenseEvent;
 
 public class ExpensesPresenter
 {
@@ -23,15 +23,21 @@ public class ExpensesPresenter
 	{
 		HasClickHandlers getAddButton();
 
-		HasClickHandlers getEditButton();
+		EditExpenseEvent.HasHandlers getEditExpenseHandlers();
+
+		RemoveExpenseEvent.HasHandlers getRemoveExpenseHandlers();
 
 		HasClickHandlers getDeleteButton();
 
-		HasClickHandlers getLogoutButton();
+		void setData(Collection<ExpenseDTO> data);
 
-		void setData(List<ExpenseDTO> data);
+		void addExpense(ExpenseDTO expense);
 
-		int getSelectedRow();
+		void updateExpense(ExpenseDTO expense);
+
+		void removeExpenses(Collection<String> expenseIds);
+
+		Collection<String> getSelectedExpenses();
 
 		Widget asWidget();
 	}
@@ -55,50 +61,38 @@ public class ExpensesPresenter
 
 	public void bind()
 	{
-		this.display.getAddButton().addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				// ExpensesPresenter.this.eventBus.fireEvent(new
-				// AddExpenseEvent());
-			}
-		});
-
-		this.display.getEditButton().addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				final int selectedRow = ExpensesPresenter.this.display.getSelectedRow();
-
-				if (selectedRow >= 0)
-				{
-					final String expenseId = ExpensesPresenter.this.expenses.get(selectedRow).expenseId;
-					// ExpensesPresenter.this.eventBus.fireEvent(new
-					// EditExpenseEvent(expenseId));
-				}
-			}
-		});
-
-		this.display.getDeleteButton().addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				doDeleteExpense();
-			}
-
-		});
-
-		this.display.getLogoutButton().addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(final ClickEvent event)
-			{
-				ExpensesPresenter.this.eventBus.fireEvent(new UserLogOutEvent());
-			}
-		});
+		// this.display.getAddButton().addClickHandler(new ClickHandler()
+		// {
+		// @Override
+		// public void onClick(final ClickEvent event)
+		// {
+		// // ExpensesPresenter.this.eventBus.fireEvent(new
+		// // AddExpenseEvent());
+		// }
+		// });
+		//
+		// this.display.getEditExpenseHandlers().addEditExpenseHandler(new
+		// EditExpenseEvent.Handler()
+		// {
+		//
+		// @Override
+		// public void onEditExpense(final EditExpenseEvent event)
+		// {
+		// final String expenseId = event.getExpense().expenseId;
+		// // ExpensesPresenter.this.eventBus.fireEvent(new
+		// // EditExpenseEvent(expenseId));
+		// }
+		// });
+		//
+		// this.display.getDeleteButton().addClickHandler(new ClickHandler()
+		// {
+		// @Override
+		// public void onClick(final ClickEvent event)
+		// {
+		// doDeleteExpense();
+		// }
+		//
+		// });
 	}
 
 	public void go(final HasWidgets container)
@@ -132,41 +126,43 @@ public class ExpensesPresenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error fetching expenses");
+				Window.alert("Error fetching expenses\n" + String.valueOf(exception));
 			}
 		});
 	}
 
 	private void doDeleteExpense()
 	{
-		final int selectedRow = ExpensesPresenter.this.display.getSelectedRow();
+		// final List<Integer> selectedExpenses =
+		// ExpensesPresenter.this.display.getSelectedExpenses();
 
-		if (selectedRow >= 0)
-		{
-			final String expenseId = ExpensesPresenter.this.expenses.get(selectedRow).expenseId;
+		// if (selectedRow >= 0)
+		// {
+		// final String expenseId =
+		// ExpensesPresenter.this.expenses.reget(selectedRow).expenseId;
 
-			// serviceBus.expenseTrackerService.delete
-			//
-			// rpcService.deleteContacts(ids, new
-			// AsyncCallback<ArrayList<ContactDetails>>() {
-			// public void onSuccess(ArrayList<ContactDetails> result) {
-			// contactDetails = result;
-			// sortContactDetails();
-			// List<String> data = new ArrayList<String>();
-			//
-			// for (int i = 0; i < result.size(); ++i) {
-			// data.add(contactDetails.get(i).getDisplayName());
-			// }
-			//
-			// display.setData(data);
-			//
-			// }
-			//
-			// public void onFailure(Throwable caught) {
-			// Window.alert("Error deleting selected contacts");
-			// }
-			// });
-		}
+		// serviceBus.expenseTrackerService.delete
+		//
+		// rpcService.deleteContacts(ids, new
+		// AsyncCallback<ArrayList<ContactDetails>>() {
+		// public void onSuccess(ArrayList<ContactDetails> result) {
+		// contactDetails = result;
+		// sortContactDetails();
+		// List<String> data = new ArrayList<String>();
+		//
+		// for (int i = 0; i < result.size(); ++i) {
+		// data.add(contactDetails.get(i).getDisplayName());
+		// }
+		//
+		// display.setData(data);
+		//
+		// }
+		//
+		// public void onFailure(Throwable caught) {
+		// Window.alert("Error deleting selected contacts");
+		// }
+		// });
+		// }
 	}
 
 }

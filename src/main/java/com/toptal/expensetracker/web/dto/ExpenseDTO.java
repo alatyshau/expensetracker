@@ -85,4 +85,15 @@ public class ExpenseDTO
 		expense.setComment("");
 		return expense;
 	}
+
+	public static ExpenseDTO sample(final Long expenseId, final String date, final String desc)
+	{
+		final ExpenseDTO expense = new ExpenseDTO();
+		expense.setExpenseId(expenseId);
+		expense.setDateTime(Utils.dateTime(date));
+		expense.setDescription(desc);
+		expense.setAmount(BigDecimal.valueOf(100.12345d));
+		expense.setComment("comment");
+		return expense;
+	}
 }

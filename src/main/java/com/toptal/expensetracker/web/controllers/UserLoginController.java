@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.toptal.expensetracker.web.dto.UserDTO;
+import com.toptal.expensetracker.dto.UserDTO;
 
 @Controller
-public class UserLoginController
+public class UserLoginController extends BaseController
 {
 	@Autowired
 	private AuthenticationManager authenticationManager;

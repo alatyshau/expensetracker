@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
 
-import com.toptal.expensetracker.gwt.client.data.UserDTO;
+import com.toptal.expensetracker.gwt.client.dto.UserDTO;
 
 @Path("/api")
 public interface UserService extends RestService

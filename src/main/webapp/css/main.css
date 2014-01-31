@@ -13,6 +13,43 @@ body {
 	color: #000;
 }
 
+div.rootDiv {
+	width: 800px;
+	height: 100%;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+}
+
+div#slot-logo img {
+	width: 64px;
+	height: 64px;
+	float: left
+}
+
+div#slot-logo div {
+	font-size: 24px;
+	font-weight: bolder;
+	height: 40px;
+	padding-top: 24px;
+	float: left;
+}
+
+div.separator {
+	height: 8px;
+}
+
+div#slot-header {
+	padding-right: 4px;
+}
+
+div#slot-message {
+	
+}
+
+div#slot-body {
+	
+}
+
 table.day-table {
 	
 }

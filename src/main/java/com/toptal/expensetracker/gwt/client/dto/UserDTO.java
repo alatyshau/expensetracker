@@ -1,4 +1,4 @@
-package com.toptal.expensetracker.gwt.client.data;
+package com.toptal.expensetracker.gwt.client.dto;
 
 public class UserDTO
 {

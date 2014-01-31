@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.toptal.expensetracker.web.dto.UserDTO;
+import com.toptal.expensetracker.common.ValidationException;
+import com.toptal.expensetracker.dto.UserDTO;
 
 @Controller
 @RequestMapping("/api/user")
-public class UserAccountController
+public class UserAccountController extends BaseController
 {
 	@Autowired
 	private UserDetailsManager userDetailsManager;
@@ -30,7 +31,8 @@ public class UserAccountController
 	{
 		if (this.userDetailsManager.userExists(userDTO.getEmail()))
 		{
-			throw new IllegalArgumentException("Such email has been already registered: " + userDTO.getEmail());
+			throw new ValidationException("Such email has been already registered: " + userDTO.getEmail());
+			// throw new ValidationException("user.create.emailAlreadyExists");
 		}
 
 		// TODO validate email
@@ -50,7 +52,8 @@ public class UserAccountController
 	{
 		if (this.userDetailsManager.userExists(userDTO.getEmail()))
 		{
-			throw new IllegalArgumentException("Such email has been already registered: " + userDTO.getEmail());
+			throw new ValidationException("Such email has been already registered: " + userDTO.getEmail());
+			// throw new ValidationException("user.create.emailAlreadyExists");
 		}
 
 		// TODO validate email

@@ -8,12 +8,12 @@ import org.fusesource.restygwt.client.MethodCallback;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.toptal.expensetracker.gwt.client.AppController;
 import com.toptal.expensetracker.gwt.client.ServiceBus;
-import com.toptal.expensetracker.gwt.client.data.ExpenseDTO;
-import com.toptal.expensetracker.gwt.client.data.UserDTO;
+import com.toptal.expensetracker.gwt.client.dto.ExpenseDTO;
+import com.toptal.expensetracker.gwt.client.dto.UserDTO;
 import com.toptal.expensetracker.gwt.client.event.EditExpenseEvent;
 import com.toptal.expensetracker.gwt.client.event.RemoveExpenseEvent;
 
@@ -47,16 +47,20 @@ public class ExpensesPresenter
 	private final ServiceBus serviceBus;
 	private final HandlerManager eventBus;
 	private final Display display;
+	private final AppController.Display rootDisplay;
 	private final UserDTO user;
 
 	public ExpensesPresenter(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display,
-			final UserDTO user)
+			final AppController.Display rootDisplay, final UserDTO user)
 	{
 		super();
 		this.serviceBus = serviceBus;
 		this.eventBus = eventBus;
 		this.display = display;
+		this.rootDisplay = rootDisplay;
 		this.user = user;
+
+		bind();
 	}
 
 	public void bind()
@@ -97,7 +101,6 @@ public class ExpensesPresenter
 
 	public void go(final HasWidgets container)
 	{
-		bind();
 		container.clear();
 		container.add(this.display.asWidget());
 		fetchExpenses();
@@ -126,7 +129,7 @@ public class ExpensesPresenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error fetching expenses\n" + String.valueOf(exception));
+				ExpensesPresenter.this.rootDisplay.showError("Error fetching expenses", method, exception);
 			}
 		});
 	}

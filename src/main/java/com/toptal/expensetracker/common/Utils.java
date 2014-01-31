@@ -1,4 +1,4 @@
-package com.toptal.expensetracker.util;
+package com.toptal.expensetracker.common;
 
 import java.lang.ref.SoftReference;
 import java.math.BigDecimal;

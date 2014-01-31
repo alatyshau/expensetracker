@@ -9,10 +9,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.toptal.expensetracker.gwt.client.data.UserDTO;
+import com.toptal.expensetracker.gwt.client.dto.UserDTO;
 import com.toptal.expensetracker.gwt.client.event.AccountCreatedEvent;
 import com.toptal.expensetracker.gwt.client.event.CreateAccountCancelledEvent;
 import com.toptal.expensetracker.gwt.client.event.CreateAccountEvent;
@@ -31,16 +30,27 @@ public class AppController implements Presenter
 	{
 		HasClickHandlers getLogoutButton();
 
-		HasVisibility getVisibilityControl();
+		HasVisibility getHeaderVisibility();
 
 		String getCurrentEmail();
 
 		void setCurrentEmail(String email);
+
+		void showError(String message);
+
+		void showError(String string, Method method, Throwable exception);
+
+		void showInfo(String message);
+
+		void showTick(String message);
+
+		/** Call it only in user action handlers (e.g. click handlers). */
+		void clearMessage();
 	}
 
 	private final ServiceBus serviceBus;
 	private final HandlerManager eventBus;
-	private final Display display;
+	private final Display rootDisplay;
 	private HasWidgets container;
 
 	private LoginFormPresenter loginFormPresenter;
@@ -51,29 +61,32 @@ public class AppController implements Presenter
 		super();
 		this.serviceBus = serviceBus;
 		this.eventBus = eventBus;
-		this.display = display;
+		this.rootDisplay = display;
 
 		bind();
 	}
 
 	public void bind()
 	{
+		final Display rootDisplay = this.rootDisplay;
 		this.eventBus.addHandler(UserLoggedInEvent.TYPE, new UserLoggedInEvent.Handler()
 		{
 
 			@Override
 			public void onUserLogggedIn(final UserLoggedInEvent event)
 			{
+
 				doAfterLogin(event.getUser());
 			}
 		});
 
-		this.display.getLogoutButton().addClickHandler(new ClickHandler()
+		this.rootDisplay.getLogoutButton().addClickHandler(new ClickHandler()
 		{
 
 			@Override
 			public void onClick(final ClickEvent event)
 			{
+				rootDisplay.clearMessage();
 				doLogout();
 			}
 		});
@@ -117,8 +130,9 @@ public class AppController implements Presenter
 		final ServiceBus serviceBus = this.serviceBus;
 		final HandlerManager eventBus = this.eventBus;
 
-		this.loginFormPresenter = new LoginFormPresenter(serviceBus, eventBus, new LoginFormView());
-		this.createAccPresenter = new CreateAccountPresenter(serviceBus, eventBus, new CreateAccountView());
+		this.loginFormPresenter = new LoginFormPresenter(serviceBus, eventBus, new LoginFormView(), this.rootDisplay);
+		this.createAccPresenter = new CreateAccountPresenter(serviceBus, eventBus, new CreateAccountView(),
+				this.rootDisplay);
 
 		fetchCurrentUser();
 	}
@@ -127,56 +141,33 @@ public class AppController implements Presenter
 	{
 		if (lastEmail != null)
 		{
-			AppController.this.loginFormPresenter.setLastEmail(lastEmail);
+			this.loginFormPresenter.setLastEmail(lastEmail);
 		}
-		AppController.this.loginFormPresenter.go(this.container);
+		this.loginFormPresenter.go(this.container);
 	}
 
 	private void gotoCreateAccountForm()
 	{
-		AppController.this.createAccPresenter.go(this.container);
+		this.createAccPresenter.go(this.container);
 	}
 
 	private void doAfterLogin(final UserDTO user)
 	{
-		this.display.getVisibilityControl().setVisible(true);
-		this.display.setCurrentEmail(user.email);
+		this.rootDisplay.getHeaderVisibility().setVisible(true);
+		this.rootDisplay.setCurrentEmail(user.email);
 
 		final ExpensesView expensesView = new ExpensesView(new Date());
 		final ExpensesPresenter expensesPresenter = new ExpensesPresenter(this.serviceBus, this.eventBus, expensesView,
-				user);
+				this.rootDisplay, user);
 		expensesPresenter.go(this.container);
-
-		// final ServiceBus serviceBus = this.serviceBus;
-		// final HandlerManager eventBus = this.eventBus;
-		// final HasWidgets container = this.container;
-		// this.serviceBus.userService.today(new MethodCallback<String>()
-		// {
-		//
-		// @Override
-		// public void onSuccess(final Method method, final String response)
-		// {
-		// final ExpensesPresenter expensesPresenter = new
-		// ExpensesPresenter(serviceBus, eventBus,
-		// new ExpensesView(new Date()), user);
-		// expensesPresenter.go(container);
-		// }
-		//
-		// @Override
-		// public void onFailure(final Method method, final Throwable exception)
-		// {
-		// Window.alert("Error when communicating with server\n" +
-		// String.valueOf(exception));
-		// gotoLoginForm(user.email);
-		// }
-		// });
 	}
 
 	private void doLogout()
 	{
-		this.display.getVisibilityControl().setVisible(false);
-		final String lastEmail = this.display.getCurrentEmail();
-		this.display.setCurrentEmail(null);
+		final Display rootDisplay = this.rootDisplay;
+		rootDisplay.getHeaderVisibility().setVisible(false);
+		final String lastEmail = rootDisplay.getCurrentEmail();
+		rootDisplay.setCurrentEmail(null);
 
 		this.serviceBus.userService.logout(new MethodCallback<Void>()
 		{
@@ -184,6 +175,7 @@ public class AppController implements Presenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
+				rootDisplay.showError("Server error during logout", method, exception);
 				fetchCurrentUser();
 			}
 
@@ -197,6 +189,7 @@ public class AppController implements Presenter
 
 	private void fetchCurrentUser()
 	{
+		final Display rootDisplay = this.rootDisplay;
 		this.serviceBus.userService.getCurrentUser(new MethodCallback<UserDTO>()
 		{
 
@@ -217,7 +210,7 @@ public class AppController implements Presenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error when getting current user\n" + String.valueOf(exception));
+				rootDisplay.showError("Error when getting current user", method, exception);
 				gotoLoginForm(null);
 			}
 		});

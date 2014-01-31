@@ -31,7 +31,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.toptal.expensetracker.gwt.client.data.ExpenseDTO;
+import com.toptal.expensetracker.gwt.client.dto.ExpenseDTO;
 import com.toptal.expensetracker.gwt.client.event.EditExpenseEvent;
 import com.toptal.expensetracker.gwt.client.event.RemoveExpenseEvent;
 import com.toptal.expensetracker.gwt.client.presenter.ExpensesPresenter;
@@ -192,8 +192,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 					dayTable.setWidth("100%");
 					dayTable.setStylePrimaryName("day-table");
 					day.table = dayTable;
-					final String dayTitle = "Day #" + day.num + " -- "
-							+ dateFormat.format(new Date(dayExpenses.get(0).dateTime));
+					final String dayTitle = dateFormat.format(new Date(dayExpenses.get(0).dateTime));
 					dayTable.setText(0, 0, dayTitle);
 					final FlexCellFormatter flexCellFormatter = dayTable.getFlexCellFormatter();
 					flexCellFormatter.setColSpan(0, 0, 4);

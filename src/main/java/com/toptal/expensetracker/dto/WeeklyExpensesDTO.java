@@ -1,4 +1,4 @@
-package com.toptal.expensetracker.web.dto;
+package com.toptal.expensetracker.dto;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

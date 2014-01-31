@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.toptal.expensetracker.web.dto.ExpenseDTO;
-import com.toptal.expensetracker.web.dto.WeeklyExpensesDTO;
+import com.toptal.expensetracker.dto.ExpenseDTO;
+import com.toptal.expensetracker.dto.WeeklyExpensesDTO;
 
 @Controller
 @RequestMapping("/api/expenses")
-public class ExpensesController
+public class ExpensesController extends BaseController
 {
 	// @InitBinder()
 	// protected void initBinder(final WebDataBinder binder)

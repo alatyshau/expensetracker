@@ -11,8 +11,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.toptal.expensetracker.gwt.client.AppController;
 import com.toptal.expensetracker.gwt.client.ServiceBus;
-import com.toptal.expensetracker.gwt.client.data.UserDTO;
+import com.toptal.expensetracker.gwt.client.dto.UserDTO;
 import com.toptal.expensetracker.gwt.client.event.AccountCreatedEvent;
 import com.toptal.expensetracker.gwt.client.event.CreateAccountCancelledEvent;
 
@@ -36,22 +37,31 @@ public class CreateAccountPresenter implements Presenter
 	private final ServiceBus serviceBus;
 	private final HandlerManager eventBus;
 	private final Display display;
+	private final AppController.Display rootDisplay;
 
-	public CreateAccountPresenter(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display)
+	public CreateAccountPresenter(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display,
+			final AppController.Display rootDisplay)
 	{
 		super();
 		this.serviceBus = serviceBus;
 		this.eventBus = eventBus;
 		this.display = display;
+		this.rootDisplay = rootDisplay;
+
+		bind();
 	}
 
 	public void bind()
 	{
+		final AppController.Display rootDisplay = this.rootDisplay;
+
 		this.display.getCreateButton().addClickHandler(new ClickHandler()
 		{
 			@Override
 			public void onClick(final ClickEvent event)
 			{
+				Window.alert("CreateAccount_onClick");
+				rootDisplay.clearMessage();
 				doCreateAccount();
 			}
 		});
@@ -61,6 +71,7 @@ public class CreateAccountPresenter implements Presenter
 			@Override
 			public void onClick(final ClickEvent event)
 			{
+				rootDisplay.clearMessage();
 				CreateAccountPresenter.this.eventBus.fireEvent(new CreateAccountCancelledEvent());
 			}
 		});
@@ -69,7 +80,6 @@ public class CreateAccountPresenter implements Presenter
 	@Override
 	public void go(final HasWidgets container)
 	{
-		bind();
 		container.clear();
 		container.add(this.display.asWidget());
 		this.display.getEmail().setValue(null);
@@ -79,15 +89,18 @@ public class CreateAccountPresenter implements Presenter
 
 	private void doCreateAccount()
 	{
+		final AppController.Display rootDisplay = this.rootDisplay;
 		final String email = this.display.getEmail().getValue();
 		final String password = this.display.getPassword().getValue();
 		final String confirmPassword = this.display.getConfirmPassword().getValue();
 
 		if (password != confirmPassword)
 		{
-			Window.alert("Passwords are different");
+			rootDisplay.showError("Passwords are different");
 			return; // EARLY EXIT !!!
 		}
+
+		Window.alert("Before Account Creation");
 
 		this.serviceBus.userService.createUser(new UserDTO(email, password), new MethodCallback<UserDTO>()
 		{
@@ -101,7 +114,7 @@ public class CreateAccountPresenter implements Presenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error creating account: check fields\n" + String.valueOf(exception));
+				rootDisplay.showError("Error creating account: check fields", method, exception);
 			}
 		});
 	}

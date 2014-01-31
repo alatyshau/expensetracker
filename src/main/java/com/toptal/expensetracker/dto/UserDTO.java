@@ -1,4 +1,4 @@
-package com.toptal.expensetracker.web.dto;
+package com.toptal.expensetracker.dto;
 
 public class UserDTO
 {

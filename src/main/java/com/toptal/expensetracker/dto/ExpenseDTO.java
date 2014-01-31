@@ -1,9 +1,9 @@
-package com.toptal.expensetracker.web.dto;
+package com.toptal.expensetracker.dto;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.toptal.expensetracker.util.Utils;
+import com.toptal.expensetracker.common.Utils;
 
 public class ExpenseDTO
 {

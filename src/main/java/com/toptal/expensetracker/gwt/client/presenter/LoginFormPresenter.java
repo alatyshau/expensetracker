@@ -7,12 +7,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.toptal.expensetracker.gwt.client.AppController;
 import com.toptal.expensetracker.gwt.client.ServiceBus;
-import com.toptal.expensetracker.gwt.client.data.UserDTO;
+import com.toptal.expensetracker.gwt.client.dto.UserDTO;
 import com.toptal.expensetracker.gwt.client.event.CreateAccountEvent;
 import com.toptal.expensetracker.gwt.client.event.UserLoggedInEvent;
 
@@ -36,22 +36,30 @@ public class LoginFormPresenter implements Presenter
 	private final ServiceBus serviceBus;
 	private final HandlerManager eventBus;
 	private final Display display;
+	private final AppController.Display rootDisplay;
 
-	public LoginFormPresenter(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display)
+	public LoginFormPresenter(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display,
+			final AppController.Display rootDisplay)
 	{
 		super();
 		this.serviceBus = serviceBus;
 		this.eventBus = eventBus;
 		this.display = display;
+		this.rootDisplay = rootDisplay;
+
+		bind();
 	}
 
 	public void bind()
 	{
+		final AppController.Display rootDisplay = this.rootDisplay;
+
 		this.display.getLoginButton().addClickHandler(new ClickHandler()
 		{
 			@Override
 			public void onClick(final ClickEvent event)
 			{
+				rootDisplay.clearMessage();
 				doLogin();
 			}
 		});
@@ -61,6 +69,7 @@ public class LoginFormPresenter implements Presenter
 			@Override
 			public void onClick(final ClickEvent event)
 			{
+				rootDisplay.clearMessage();
 				LoginFormPresenter.this.eventBus.fireEvent(new CreateAccountEvent());
 			}
 		});
@@ -79,7 +88,6 @@ public class LoginFormPresenter implements Presenter
 	@Override
 	public void go(final HasWidgets container)
 	{
-		bind();
 		container.clear();
 		container.add(this.display.asWidget());
 		this.display.getEmail().setValue(this.lastEmail);
@@ -88,6 +96,8 @@ public class LoginFormPresenter implements Presenter
 
 	private void doLogin()
 	{
+		final AppController.Display rootDisplay = this.rootDisplay;
+
 		final String email = this.display.getEmail().getValue();
 		this.lastEmail = email;
 		final String password = this.display.getPassword().getValue();
@@ -103,7 +113,7 @@ public class LoginFormPresenter implements Presenter
 			@Override
 			public void onFailure(final Method method, final Throwable exception)
 			{
-				Window.alert("Error logging in\n" + String.valueOf(exception));
+				rootDisplay.showError("Error logging in", method, exception);
 			}
 		});
 	}

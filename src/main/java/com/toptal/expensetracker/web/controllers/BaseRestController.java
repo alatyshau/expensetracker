@@ -5,16 +5,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.toptal.expensetracker.common.ServiceContext;
 import com.toptal.expensetracker.common.ValidationException;
 import com.toptal.expensetracker.dto.ErrorDTO;
+import com.toptal.expensetracker.web.misc.ContextInitInterceptor;
 
-public class BaseController
+public class BaseRestController
 {
 	@ExceptionHandler({ ValidationException.class })
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	@ResponseBody
 	public ErrorDTO resolveValidationException(final ValidationException ex)
 	{
+		ex.printStackTrace();
 		return new ErrorDTO(ex.getMessage());
 	}
 
@@ -23,6 +26,12 @@ public class BaseController
 	@ResponseBody
 	public ErrorDTO resolveException(final RuntimeException ex)
 	{
+		ex.printStackTrace();
 		return new ErrorDTO(ex.getMessage());
+	}
+
+	public ServiceContext ctx()
+	{
+		return ContextInitInterceptor.getCurrentContext();
 	}
 }

@@ -177,4 +177,12 @@ public class Utils
 		return list != null ? list : Collections.<T> emptyList();
 	}
 
+	public static void ensureRoles(final ServiceContext ctx, final AccessRole role)
+	{
+		if (!ctx.getRoles().contains(role))
+		{
+			throw new UnauthorizedAccessException("Role required: " + role + ". Actual roles: " + ctx.getRoles()
+					+ ". User: " + ctx.getUserId());
+		}
+	}
 }

@@ -24,6 +24,8 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import com.toptal.expensetracker.web.misc.ContextInitInterceptor;
+
 @Configuration
 @ComponentScan("com.toptal.expensetracker.web")
 @EnableWebMvc
@@ -54,6 +56,7 @@ public class WebConfig extends WebMvcConfigurerAdapter
 	public void addInterceptors(final InterceptorRegistry registry)
 	{
 		registry.addInterceptor(localeChangeInterceptor());
+		registry.addInterceptor(contextInitInterceptor());
 	}
 
 	@Override
@@ -87,6 +90,12 @@ public class WebConfig extends WebMvcConfigurerAdapter
 		final LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
 		localeChangeInterceptor.setParamName("lang");
 		return localeChangeInterceptor;
+	}
+
+	@Bean
+	public ContextInitInterceptor contextInitInterceptor()
+	{
+		return new ContextInitInterceptor(localeResolver());
 	}
 
 	@Bean

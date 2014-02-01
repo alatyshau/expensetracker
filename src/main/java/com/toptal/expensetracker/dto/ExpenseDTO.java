@@ -7,20 +7,20 @@ import com.toptal.expensetracker.common.Utils;
 
 public class ExpenseDTO
 {
-	private Long expenseId;
+	private Long expenseID;
 	private Date dateTime;
 	private String description;
 	private BigDecimal amount;
 	private String comment;
 
-	public Long getExpenseId()
+	public Long getExpenseID()
 	{
-		return this.expenseId;
+		return this.expenseID;
 	}
 
-	public void setExpenseId(final Long expenseId)
+	public void setExpenseID(final Long expenseID)
 	{
-		this.expenseId = expenseId;
+		this.expenseID = expenseID;
 	}
 
 	public Date getDateTime()
@@ -66,7 +66,7 @@ public class ExpenseDTO
 	@Override
 	public String toString()
 	{
-		return "ExpenseDTO [expenseId=" + this.expenseId + ", dateTime=" + Utils.dateTime(this.dateTime)
+		return "ExpenseDTO [expenseId=" + this.expenseID + ", dateTime=" + Utils.dateTime(this.dateTime)
 				+ ", description=" + this.description + ", amount=" + this.amount + ", comment=" + this.comment + "]";
 	}
 
@@ -78,7 +78,7 @@ public class ExpenseDTO
 	public static ExpenseDTO sample(final Long expenseId)
 	{
 		final ExpenseDTO expense = new ExpenseDTO();
-		expense.setExpenseId(expenseId);
+		expense.setExpenseID(expenseId);
 		expense.setDateTime(Utils.dateTime("2014-01-07 12:12"));
 		expense.setDescription("groceries");
 		expense.setAmount(BigDecimal.valueOf(100.12345d));
@@ -89,7 +89,7 @@ public class ExpenseDTO
 	public static ExpenseDTO sample(final Long expenseId, final String date, final String desc)
 	{
 		final ExpenseDTO expense = new ExpenseDTO();
-		expense.setExpenseId(expenseId);
+		expense.setExpenseID(expenseId);
 		expense.setDateTime(Utils.dateTime(date));
 		expense.setDescription(desc);
 		expense.setAmount(BigDecimal.valueOf(100.12345d));

@@ -1,12 +1,13 @@
 package com.toptal.expensetracker.common;
 
 import java.util.Locale;
-
-import com.toptal.expensetracker.dto.UserDTO;
+import java.util.Set;
 
 public interface ServiceContext
 {
 	Locale getLocale();
 
-	UserDTO getUser();
+	String getUserId();
+
+	Set<AccessRole> getRoles();
 }

@@ -1,85 +1,67 @@
 package com.toptal.expensetracker.web.controllers;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.toptal.expensetracker.dto.ExpenseDTO;
-import com.toptal.expensetracker.dto.WeeklyExpensesDTO;
+import com.toptal.expensetracker.services.ExpenseTrackingService;
 
 @Controller
 @RequestMapping("/api/expenses")
-public class ExpensesController extends BaseController
+public class ExpensesController extends BaseRestController
 {
-	// @InitBinder()
-	// protected void initBinder(final WebDataBinder binder)
-	// {
-	// final DateFormat dateFormat = Utils.DEFAULT_DATE_TIME_FORMAT;
-	// binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,
-	// true));
-	// }
+	@Autowired
+	private ExpenseTrackingService expenseTrackingService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public List<ExpenseDTO> getExpenses()
 	{
-		return Arrays.asList(//
-				ExpenseDTO.sample(1L, "2014-01-01 12:45", "groceries"), //
-				ExpenseDTO.sample(1L, "2014-01-01 09:09", "milk"), //
-				ExpenseDTO.sample(1L, "2014-01-01 14:14", "toys"), //
-				ExpenseDTO.sample(1L, "2014-01-01 12:45", "new car"), //
-				ExpenseDTO.sample(1L, "2014-01-30 12:34", "apples"), //
-				ExpenseDTO.sample(1L, "2014-01-01 12:48", "groceries"), //
-				ExpenseDTO.sample(1L, "2014-01-28 11:11", "groceries"), //
-				ExpenseDTO.sample(1L, "2014-01-29 16:15", "groceries"), //
-				ExpenseDTO.sample(1L, "2014-01-28 08:45", "milk"), //
-				ExpenseDTO.sample(1L, "2014-01-11 00:37", "apples"), //
-				ExpenseDTO.sample(1L, "2014-01-11 20:45", "toys"), //
-				ExpenseDTO.sample(1L, "2014-01-11 17:45", "milk") //
-				);
-	}
-
-	@RequestMapping(value = "/weekly", method = RequestMethod.GET)
-	@ResponseBody
-	public List<WeeklyExpensesDTO> getWeeklyStatistics()
-	{
-		return Arrays.asList(WeeklyExpensesDTO.sample(0, 222), WeeklyExpensesDTO.sample(1, 500),
-				WeeklyExpensesDTO.sample(2, 150), WeeklyExpensesDTO.sample(3, 78));
+		return this.expenseTrackingService.searchExpenses(ctx());
 	}
 
 	@RequestMapping(value = "/{expenseId}", method = RequestMethod.GET)
 	@ResponseBody
 	public ExpenseDTO getExpense(@PathVariable final Long expenseId)
 	{
-		return ExpenseDTO.sample(expenseId);
+		return this.expenseTrackingService.readExpense(ctx(), expenseId);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public ExpenseDTO createExpense(final Model model, final ExpenseDTO expense)
+	public ExpenseDTO createExpense(final Model model, @RequestBody final ExpenseDTO expense)
 	{
-		expense.setExpenseId(123L);
-		return expense;
+		return this.expenseTrackingService.createExpense(ctx(), expense);
 	}
 
 	@RequestMapping(value = "/{expenseId}", method = RequestMethod.PUT)
 	@ResponseBody
-	public ExpenseDTO updateExpense(@PathVariable final Long expenseId, final ExpenseDTO expense)
+	public ExpenseDTO updateExpense(@PathVariable final Long expenseId, @RequestBody final ExpenseDTO expense)
 	{
-		return expense;
+		return this.expenseTrackingService.updateExpense(ctx(), expenseId, expense);
 	}
 
 	@RequestMapping(value = "/{expenseId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public ExpenseDTO deleteExpense(@PathVariable final Long expenseId)
+	public void deleteExpense(@PathVariable final Long expenseId)
 	{
-		return ExpenseDTO.sample(expenseId);
+		this.expenseTrackingService.deleteExpenses(ctx(), Collections.singletonList(expenseId));
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE)
+	@ResponseBody
+	public void deleteExpenses(@RequestBody final List<Long> expenseIds)
+	{
+		this.expenseTrackingService.deleteExpenses(ctx(), expenseIds);
 	}
 
 }

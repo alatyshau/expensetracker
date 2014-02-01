@@ -14,6 +14,8 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
+import com.toptal.expensetracker.common.AccessRole;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter
@@ -28,8 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 	{
 		final InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> configurer = auth
 				.inMemoryAuthentication();
-		configurer.withUser("user@gmail.com").password("password").roles("USER");
-		configurer.withUser("admin@gmail.com").password("password").roles("USER", "ADMIN");
+		configurer.withUser("user@gmail.com").password("password").authorities(AccessRole.USER);
+		configurer.withUser("admin@gmail.com").password("password").authorities(AccessRole.USER, AccessRole.ADMIN);
 
 		this.userDetailsManager = configurer.getUserDetailsService();
 
@@ -47,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 				"/api/user/**", "/welcome", "/", "/expenseTracker/**" };
 		http.authorizeRequests() //
 				.antMatchers(permitAllList).permitAll() //
-				.antMatchers("/admin/**").hasRole("ADMIN") //
+				.antMatchers("/admin/**").hasAuthority(AccessRole.ADMIN.getAuthority()) //
 				.antMatchers("/api/**").authenticated() //
 				.anyRequest().denyAll();
 

@@ -1,17 +1,11 @@
 package com.toptal.expensetracker.gwt.client;
 
-import org.fusesource.restygwt.client.Dispatcher;
-import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.Resource;
 import org.fusesource.restygwt.client.RestServiceProxy;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.toptal.expensetracker.gwt.client.services.ExpenseTrackerService;
 import com.toptal.expensetracker.gwt.client.services.UserService;
@@ -25,24 +19,28 @@ public class ExpenseTrackerEntryPoint implements EntryPoint
 	{
 		final Resource resource = new Resource(GWT.getHostPageBaseURL() + "api");
 		final ServiceBus serviceBus = new ServiceBus();
-		final Dispatcher dispatcher = new Dispatcher()
-		{
-			@Override
-			public Request send(final Method method, final RequestBuilder builder) throws RequestException
-			{
-				Window.alert("Sending http request: " + builder.getHTTPMethod() + " " + builder.getUrl() + " ,timeout:"
-						+ builder.getTimeoutMillis());
-				return builder.send();
-			}
-		};
+		// final Dispatcher dispatcher = new Dispatcher()
+		// {
+		// @Override
+		// public Request send(final Method method, final RequestBuilder
+		// builder) throws RequestException
+		// {
+		// Window.alert("Sending http request: " + builder.getHTTPMethod() + " "
+		// + builder.getUrl() + " ,timeout:"
+		// + builder.getTimeoutMillis());
+		// return builder.send();
+		// }
+		// };
 
 		serviceBus.expenseTrackerService = GWT.create(ExpenseTrackerService.class);
 		((RestServiceProxy) serviceBus.expenseTrackerService).setResource(resource);
-		((RestServiceProxy) serviceBus.expenseTrackerService).setDispatcher(dispatcher);
+		// ((RestServiceProxy)
+		// serviceBus.expenseTrackerService).setDispatcher(dispatcher);
 
 		serviceBus.userService = GWT.create(UserService.class);
 		((RestServiceProxy) serviceBus.userService).setResource(resource);
-		((RestServiceProxy) serviceBus.userService).setDispatcher(dispatcher);
+		// ((RestServiceProxy)
+		// serviceBus.userService).setDispatcher(dispatcher);
 
 		final HandlerManager eventBus = new HandlerManager(null);
 

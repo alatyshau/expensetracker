@@ -7,7 +7,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -60,7 +59,6 @@ public class CreateAccountPresenter implements Presenter
 			@Override
 			public void onClick(final ClickEvent event)
 			{
-				Window.alert("CreateAccount_onClick");
 				rootDisplay.clearMessage();
 				doCreateAccount();
 			}
@@ -99,8 +97,6 @@ public class CreateAccountPresenter implements Presenter
 			rootDisplay.showError("Passwords are different");
 			return; // EARLY EXIT !!!
 		}
-
-		Window.alert("Before Account Creation");
 
 		this.serviceBus.userService.createUser(new UserDTO(email, password), new MethodCallback<UserDTO>()
 		{

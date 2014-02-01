@@ -145,7 +145,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 
 		for (final ExpenseDTO expense : data)
 		{
-			final String expenseId = expense.expenseId;
+			final String expenseId = expense.expenseID;
 			final Date dateTime = new Date(expense.dateTime);
 			final int dayNum = DateUtil.dayOfWeek(dateTime);
 			final int weekNum = DateUtil.getWeeksBetween(dateTime, today, todayDay);
@@ -213,7 +213,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 							public void onDoubleClick(final DoubleClickEvent event)
 							{
 								final EditExpenseEvent editEvent = new EditExpenseEvent(expense);
-								Window.alert("EditEvent: " + expense.expenseId + " -- " + editEvent);
+								Window.alert("EditEvent: " + expense.expenseID + " -- " + editEvent);
 								// fire Edit event
 							}
 						});

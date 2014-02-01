@@ -1,0 +1,9 @@
+CREATE TABLE `expense` (
+    expenseID BIGINT NOT NULL AUTO_INCREMENT UNIQUE,
+    userID VARCHAR(256) NOT NULL,
+    dateTime TIMESTAMP NOT NULL,
+    description VARCHAR(256) NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    comment VARCHAR(1024),
+    PRIMARY KEY (expenseID)
+)

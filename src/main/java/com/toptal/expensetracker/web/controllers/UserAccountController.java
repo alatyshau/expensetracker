@@ -1,78 +1,40 @@
 package com.toptal.expensetracker.web.controllers;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.toptal.expensetracker.common.ValidationException;
 import com.toptal.expensetracker.dto.UserDTO;
+import com.toptal.expensetracker.services.UserAccountService;
 
 @Controller
 @RequestMapping("/api/user")
-public class UserAccountController extends BaseController
+public class UserAccountController extends BaseRestController
 {
 	@Autowired
-	private UserDetailsManager userDetailsManager;
+	private UserAccountService userAccountService;
 
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	public UserDTO createUser(@RequestBody final UserDTO userDTO)
 	{
-		if (this.userDetailsManager.userExists(userDTO.getEmail()))
-		{
-			throw new ValidationException("Such email has been already registered: " + userDTO.getEmail());
-			// throw new ValidationException("user.create.emailAlreadyExists");
-		}
-
-		// TODO validate email
-		// TODO validate password
-
-		final List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("USER"));
-		final User user = new User(userDTO.getEmail(), userDTO.getPassword(), authorities);
-		this.userDetailsManager.createUser(user);
-
-		userDTO.setPassword(null);
-		return userDTO;
+		return this.userAccountService.createUser(ctx(), userDTO);
 	}
 
 	@RequestMapping(value = "/new", method = RequestMethod.GET)
 	@ResponseBody
 	public UserDTO createNewUser(final UserDTO userDTO)
 	{
-		if (this.userDetailsManager.userExists(userDTO.getEmail()))
-		{
-			throw new ValidationException("Such email has been already registered: " + userDTO.getEmail());
-			// throw new ValidationException("user.create.emailAlreadyExists");
-		}
-
-		// TODO validate email
-		// TODO validate password
-
-		final List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("USER"));
-		final User user = new User(userDTO.getEmail(), userDTO.getPassword(), authorities);
-		this.userDetailsManager.createUser(user);
-
-		userDTO.setPassword(null);
-		return userDTO;
+		return this.userAccountService.createUser(ctx(), userDTO);
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public UserDTO getCurrentUser()
 	{
-		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		final UserDTO userDTO = new UserDTO(authentication.getName());
-		return userDTO;
+		return this.userAccountService.getCurrentUser(ctx());
 	}
 }

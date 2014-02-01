@@ -2,7 +2,7 @@ package com.toptal.expensetracker.gwt.client.dto;
 
 public class ExpenseDTO
 {
-	public String expenseId;
+	public String expenseID;
 	public Long dateTime;
 	public String description;
 	public Double amount;

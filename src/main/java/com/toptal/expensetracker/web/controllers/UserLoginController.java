@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.toptal.expensetracker.dto.UserDTO;
 
 @Controller
-public class UserLoginController extends BaseController
+public class UserLoginController extends BaseRestController
 {
 	@Autowired
 	private AuthenticationManager authenticationManager;

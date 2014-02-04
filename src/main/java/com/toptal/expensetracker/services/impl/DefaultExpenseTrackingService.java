@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.toptal.expensetracker.common.AccessRole;
+import com.toptal.expensetracker.common.IllegalRequestException;
 import com.toptal.expensetracker.common.ServiceContext;
 import com.toptal.expensetracker.common.Utils;
 import com.toptal.expensetracker.common.ValidationException;
@@ -66,7 +67,12 @@ public class DefaultExpenseTrackingService implements ExpenseTrackingService
 	{
 		Utils.ensureRoles(ctx, AccessRole.USER);
 		validate(expense);
-		return this.expenseTrackingDAO.updateExpense(ctx.getUserId(), expenseId, expense);
+		final ExpenseDTO result = this.expenseTrackingDAO.updateExpense(ctx.getUserId(), expenseId, expense);
+		if (result == null)
+		{
+			throw new IllegalRequestException("expense has been removed");
+		}
+		return result;
 	}
 
 	@Override

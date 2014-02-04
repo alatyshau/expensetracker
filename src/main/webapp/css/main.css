@@ -77,3 +77,8 @@ td.day-table-header {
 	padding: 4px 0px 4px 8px;
 	margin-left: 6px;
 }
+
+div.filter-status {
+    padding: 4px;
+    padding-left: 12px;
+}

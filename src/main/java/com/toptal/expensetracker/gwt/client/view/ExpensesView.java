@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -176,7 +177,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 		this.weeksPanel = new FlowPanel();
 		this.weeksPanel.setWidth("100%");
 		rootPanel.add(menuPanel);
-		this.filterDiv = new DivWidget();
+		this.filterDiv = new DivWidget("filter-status");
 		rootPanel.add(this.filterDiv);
 		rootPanel.add(this.weeksPanel);
 	}
@@ -272,7 +273,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 		this.filterDiv.clear();
 		if (filterEnabled)
 		{
-			this.filterDiv.add(new Label("Filter applied: " + text));
+			this.filterDiv.add(new HTML("<i>Filter applied: " + text + "</i>"));
 		}
 
 		for (final Week week : this.weeks.values())

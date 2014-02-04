@@ -3,6 +3,8 @@
 <module rename-to='expenseTracker'>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="org.fusesource.restygwt.RestyGWT" />
+	<inherits name="com.github.gwtbootstrap.Bootstrap"/>
+	<inherits name="com.github.gwtbootstrap.datetimepicker.Datetimepicker"/>
 	
 	<source path="client" />
 	

@@ -43,25 +43,25 @@ public class ExpensesController extends BaseRestController
 		return this.expenseTrackingService.createExpense(ctx(), expense);
 	}
 
-	@RequestMapping(value = "/{expenseId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{expenseID}", method = RequestMethod.PUT)
 	@ResponseBody
-	public ExpenseDTO updateExpense(@PathVariable final Long expenseId, @RequestBody final ExpenseDTO expense)
+	public ExpenseDTO updateExpense(@PathVariable final Long expenseID, @RequestBody final ExpenseDTO expense)
 	{
-		return this.expenseTrackingService.updateExpense(ctx(), expenseId, expense);
+		return this.expenseTrackingService.updateExpense(ctx(), expenseID, expense);
 	}
 
-	@RequestMapping(value = "/{expenseId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{expenseID}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public void deleteExpense(@PathVariable final Long expenseId)
+	public void deleteExpense(@PathVariable final Long expenseID)
 	{
-		this.expenseTrackingService.deleteExpenses(ctx(), Collections.singletonList(expenseId));
+		this.expenseTrackingService.deleteExpenses(ctx(), Collections.singletonList(expenseID));
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE)
 	@ResponseBody
-	public void deleteExpenses(@RequestBody final List<Long> expenseIds)
+	public void deleteExpenses(@RequestBody final List<Long> expenseIDs)
 	{
-		this.expenseTrackingService.deleteExpenses(ctx(), expenseIds);
+		this.expenseTrackingService.deleteExpenses(ctx(), expenseIDs);
 	}
 
 }

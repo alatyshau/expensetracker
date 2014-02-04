@@ -8,14 +8,10 @@ import org.fusesource.restygwt.client.MethodCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.toptal.expensetracker.gwt.client.dto.UserDTO;
-import com.toptal.expensetracker.gwt.client.event.AccountCreatedEvent;
-import com.toptal.expensetracker.gwt.client.event.CreateAccountCancelledEvent;
-import com.toptal.expensetracker.gwt.client.event.CreateAccountEvent;
-import com.toptal.expensetracker.gwt.client.event.UserLoggedInEvent;
 import com.toptal.expensetracker.gwt.client.presenter.CreateAccountPresenter;
 import com.toptal.expensetracker.gwt.client.presenter.ExpensesPresenter;
 import com.toptal.expensetracker.gwt.client.presenter.LoginFormPresenter;
@@ -24,7 +20,7 @@ import com.toptal.expensetracker.gwt.client.view.CreateAccountView;
 import com.toptal.expensetracker.gwt.client.view.ExpensesView;
 import com.toptal.expensetracker.gwt.client.view.LoginFormView;
 
-public class AppController implements Presenter
+public class AppController implements Presenter<Void>, LoginFormPresenter.Callback, CreateAccountPresenter.Callback
 {
 	public interface Display
 	{
@@ -32,9 +28,7 @@ public class AppController implements Presenter
 
 		HasVisibility getHeaderVisibility();
 
-		String getCurrentEmail();
-
-		void setCurrentEmail(String email);
+		TakesValue<String> currentEmail();
 
 		void showError(String message);
 
@@ -49,18 +43,16 @@ public class AppController implements Presenter
 	}
 
 	private final ServiceBus serviceBus;
-	private final HandlerManager eventBus;
 	private final Display rootDisplay;
 	private HasWidgets container;
 
 	private LoginFormPresenter loginFormPresenter;
 	private CreateAccountPresenter createAccPresenter;
 
-	public AppController(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display)
+	public AppController(final ServiceBus serviceBus, final Display display)
 	{
 		super();
 		this.serviceBus = serviceBus;
-		this.eventBus = eventBus;
 		this.rootDisplay = display;
 
 		bind();
@@ -69,18 +61,7 @@ public class AppController implements Presenter
 	public void bind()
 	{
 		final Display rootDisplay = this.rootDisplay;
-		this.eventBus.addHandler(UserLoggedInEvent.TYPE, new UserLoggedInEvent.Handler()
-		{
-
-			@Override
-			public void onUserLogggedIn(final UserLoggedInEvent event)
-			{
-
-				doAfterLogin(event.getUser());
-			}
-		});
-
-		this.rootDisplay.getLogoutButton().addClickHandler(new ClickHandler()
+		rootDisplay.getLogoutButton().addClickHandler(new ClickHandler()
 		{
 
 			@Override
@@ -90,49 +71,17 @@ public class AppController implements Presenter
 				doLogout();
 			}
 		});
-
-		this.eventBus.addHandler(CreateAccountEvent.TYPE, new CreateAccountEvent.Handler()
-		{
-
-			@Override
-			public void onCreateAccount(final CreateAccountEvent event)
-			{
-				gotoCreateAccountForm();
-			}
-		});
-
-		this.eventBus.addHandler(CreateAccountCancelledEvent.TYPE, new CreateAccountCancelledEvent.Handler()
-		{
-
-			@Override
-			public void onCreateAccountCancelled(final CreateAccountCancelledEvent event)
-			{
-				gotoLoginForm(null);
-			}
-		});
-
-		this.eventBus.addHandler(AccountCreatedEvent.TYPE, new AccountCreatedEvent.Handler()
-		{
-
-			@Override
-			public void onAccountCreated(final AccountCreatedEvent event)
-			{
-				gotoLoginForm(event.getUser().email);
-			}
-		});
 	}
 
 	@Override
-	public void go(final HasWidgets container)
+	public void go(final HasWidgets container, final Void callback)
 	{
 		this.container = container;
 
 		final ServiceBus serviceBus = this.serviceBus;
-		final HandlerManager eventBus = this.eventBus;
 
-		this.loginFormPresenter = new LoginFormPresenter(serviceBus, eventBus, new LoginFormView(), this.rootDisplay);
-		this.createAccPresenter = new CreateAccountPresenter(serviceBus, eventBus, new CreateAccountView(),
-				this.rootDisplay);
+		this.loginFormPresenter = new LoginFormPresenter(serviceBus, new LoginFormView(), this.rootDisplay);
+		this.createAccPresenter = new CreateAccountPresenter(serviceBus, new CreateAccountView(), this.rootDisplay);
 
 		fetchCurrentUser();
 	}
@@ -143,31 +92,32 @@ public class AppController implements Presenter
 		{
 			this.loginFormPresenter.setLastEmail(lastEmail);
 		}
-		this.loginFormPresenter.go(this.container);
+		this.loginFormPresenter.go(this.container, this);
 	}
 
 	private void gotoCreateAccountForm()
 	{
-		this.createAccPresenter.go(this.container);
+		this.createAccPresenter.go(this.container, this);
 	}
 
 	private void doAfterLogin(final UserDTO user)
 	{
 		this.rootDisplay.getHeaderVisibility().setVisible(true);
-		this.rootDisplay.setCurrentEmail(user.email);
+		this.rootDisplay.currentEmail().setValue(user.email);
 
-		final ExpensesView expensesView = new ExpensesView(new Date());
-		final ExpensesPresenter expensesPresenter = new ExpensesPresenter(this.serviceBus, this.eventBus, expensesView,
-				this.rootDisplay, user);
-		expensesPresenter.go(this.container);
+		final Date today = new Date();
+		final ExpensesView expensesView = new ExpensesView(today);
+		final ExpensesPresenter expensesPresenter = new ExpensesPresenter(this.serviceBus, expensesView,
+				this.rootDisplay, user, today);
+		expensesPresenter.go(this.container, null);
 	}
 
 	private void doLogout()
 	{
 		final Display rootDisplay = this.rootDisplay;
 		rootDisplay.getHeaderVisibility().setVisible(false);
-		final String lastEmail = rootDisplay.getCurrentEmail();
-		rootDisplay.setCurrentEmail(null);
+		final String lastEmail = rootDisplay.currentEmail().getValue();
+		rootDisplay.currentEmail().setValue(null);
 
 		this.serviceBus.userService.logout(new MethodCallback<Void>()
 		{
@@ -214,5 +164,29 @@ public class AppController implements Presenter
 				gotoLoginForm(null);
 			}
 		});
+	}
+
+	@Override
+	public void onCancelCreateAccount()
+	{
+		gotoLoginForm(null);
+	}
+
+	@Override
+	public void onAccountCreated(final UserDTO user)
+	{
+		gotoLoginForm(user.email);
+	}
+
+	@Override
+	public void onCreateAccount()
+	{
+		gotoCreateAccountForm();
+	}
+
+	@Override
+	public void onUserLoggedIn(final UserDTO user)
+	{
+		doAfterLogin(user);
 	}
 }

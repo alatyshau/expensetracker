@@ -4,6 +4,7 @@ import org.fusesource.restygwt.client.Method;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -18,7 +19,7 @@ public class HeaderView implements AppController.Display
 {
 
 	private final Button logoutButton;
-	private final Label emailLabel;
+	private final StringLabel emailLabel;
 	private final FlowPanel headerPanel;
 	private final RootPanel messageSlot;
 
@@ -29,7 +30,7 @@ public class HeaderView implements AppController.Display
 		this.headerPanel = new FlowPanel();
 		headerSlot.add(this.headerPanel);
 
-		this.emailLabel = new Label("");
+		this.emailLabel = new StringLabel();
 		this.headerPanel.add(this.emailLabel);
 
 		this.logoutButton = new Button("Logout");
@@ -51,22 +52,9 @@ public class HeaderView implements AppController.Display
 	}
 
 	@Override
-	public void setCurrentEmail(final String email)
+	public TakesValue<String> currentEmail()
 	{
-		if (email != null)
-		{
-			this.emailLabel.setText(email);
-		}
-		else
-		{
-			this.emailLabel.setText("");
-		}
-	}
-
-	@Override
-	public String getCurrentEmail()
-	{
-		return this.emailLabel.getText();
+		return this.emailLabel;
 	}
 
 	@Override

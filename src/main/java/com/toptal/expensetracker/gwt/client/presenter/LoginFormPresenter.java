@@ -6,18 +6,22 @@ import org.fusesource.restygwt.client.MethodCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.toptal.expensetracker.gwt.client.AppController;
 import com.toptal.expensetracker.gwt.client.ServiceBus;
 import com.toptal.expensetracker.gwt.client.dto.UserDTO;
-import com.toptal.expensetracker.gwt.client.event.CreateAccountEvent;
-import com.toptal.expensetracker.gwt.client.event.UserLoggedInEvent;
 
-public class LoginFormPresenter implements Presenter
+public class LoginFormPresenter implements Presenter<LoginFormPresenter.Callback>
 {
+	public static interface Callback
+	{
+		void onCreateAccount();
+
+		void onUserLoggedIn(UserDTO user);
+	}
+
 	public interface Display
 	{
 		HasClickHandlers getLoginButton();
@@ -34,16 +38,15 @@ public class LoginFormPresenter implements Presenter
 	private String lastEmail;
 
 	private final ServiceBus serviceBus;
-	private final HandlerManager eventBus;
 	private final Display display;
 	private final AppController.Display rootDisplay;
+	private Callback callback;
 
-	public LoginFormPresenter(final ServiceBus serviceBus, final HandlerManager eventBus, final Display display,
+	public LoginFormPresenter(final ServiceBus serviceBus, final Display display,
 			final AppController.Display rootDisplay)
 	{
 		super();
 		this.serviceBus = serviceBus;
-		this.eventBus = eventBus;
 		this.display = display;
 		this.rootDisplay = rootDisplay;
 
@@ -70,7 +73,7 @@ public class LoginFormPresenter implements Presenter
 			public void onClick(final ClickEvent event)
 			{
 				rootDisplay.clearMessage();
-				LoginFormPresenter.this.eventBus.fireEvent(new CreateAccountEvent());
+				LoginFormPresenter.this.callback.onCreateAccount();
 			}
 		});
 	}
@@ -86,8 +89,9 @@ public class LoginFormPresenter implements Presenter
 	}
 
 	@Override
-	public void go(final HasWidgets container)
+	public void go(final HasWidgets container, final Callback callback)
 	{
+		this.callback = callback;
 		container.clear();
 		container.add(this.display.asWidget());
 		this.display.getEmail().setValue(this.lastEmail);
@@ -107,7 +111,7 @@ public class LoginFormPresenter implements Presenter
 			@Override
 			public void onSuccess(final Method method, final UserDTO response)
 			{
-				LoginFormPresenter.this.eventBus.fireEvent(new UserLoggedInEvent(response));
+				LoginFormPresenter.this.callback.onUserLoggedIn(response);
 			}
 
 			@Override

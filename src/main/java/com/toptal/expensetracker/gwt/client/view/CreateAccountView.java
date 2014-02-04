@@ -5,7 +5,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -13,12 +12,13 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.toptal.expensetracker.gwt.client.presenter.CreateAccountPresenter;
+import com.toptal.expensetracker.gwt.client.presenter.Field;
 
 public class CreateAccountView extends Composite implements CreateAccountPresenter.Display
 {
-	private final TextBox email;
-	private final PasswordTextBox password;
-	private final PasswordTextBox confirmPassword;
+	private final FieldDecorator<String> email;
+	private final FieldDecorator<String> password;
+	private final FieldDecorator<String> confirmPassword;
 	private final FlexTable detailsTable;
 	private final Button createButton;
 	private final Button cancelButton;
@@ -37,9 +37,9 @@ public class CreateAccountView extends Composite implements CreateAccountPresent
 		this.detailsTable.setWidth("100%");
 		this.detailsTable.addStyleName("contacts-ListContainer");
 		this.detailsTable.getColumnFormatter().addStyleName(1, "add-contact-input");
-		this.email = new TextBox();
-		this.password = new PasswordTextBox();
-		this.confirmPassword = new PasswordTextBox();
+		this.email = new FieldDecorator<String>(new TextBox());
+		this.password = new FieldDecorator<String>(new PasswordTextBox());
+		this.confirmPassword = new FieldDecorator<String>(new PasswordTextBox());
 		initDetailsTable();
 		contentDetailsPanel.add(this.detailsTable);
 
@@ -60,7 +60,7 @@ public class CreateAccountView extends Composite implements CreateAccountPresent
 		this.detailsTable.setWidget(1, 1, this.password);
 		this.detailsTable.setWidget(2, 0, new Label("Confirm password"));
 		this.detailsTable.setWidget(2, 1, this.confirmPassword);
-		this.email.setFocus(true);
+		this.email.getFocusWidget().setFocus(true);
 	}
 
 	@Override
@@ -76,19 +76,19 @@ public class CreateAccountView extends Composite implements CreateAccountPresent
 	}
 
 	@Override
-	public HasValue<String> getEmail()
+	public Field<String> email()
 	{
 		return this.email;
 	}
 
 	@Override
-	public HasValue<String> getPassword()
+	public Field<String> password()
 	{
 		return this.password;
 	}
 
 	@Override
-	public HasValue<String> getConfirmPassword()
+	public Field<String> confirmPassword()
 	{
 		return this.confirmPassword;
 	}

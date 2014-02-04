@@ -5,14 +5,21 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.i18n.client.HasDirection.Direction;
@@ -37,7 +44,8 @@ import com.toptal.expensetracker.gwt.client.event.RemoveExpenseEvent;
 import com.toptal.expensetracker.gwt.client.presenter.ExpensesPresenter;
 import com.toptal.expensetracker.gwt.client.util.DateUtil;
 
-public class ExpensesView extends Composite implements ExpensesPresenter.Display
+public class ExpensesView extends Composite implements ExpensesPresenter.Display, RemoveExpenseEvent.HasHandlers,
+		EditExpenseEvent.HasHandlers
 {
 	private final Date today;
 	private final Button addButton;
@@ -51,6 +59,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 
 	private final SortedMap<Integer, Week> weeks;
 	private final Map<String, int[]> expensesCoords = new HashMap<String, int[]>();
+	private final Set<ExpenseDTO> selectedExpenses = new HashSet<ExpenseDTO>();
 
 	public ExpensesView(final Date today)
 	{
@@ -93,6 +102,16 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 		rightPanel.add(this.addButton);
 		this.deleteButton = new Button("Delete Expenses");
 		rightPanel.add(this.deleteButton);
+		this.deleteButton.setEnabled(false);
+		this.deleteButton.addClickHandler(new ClickHandler()
+		{
+
+			@Override
+			public void onClick(final ClickEvent event)
+			{
+				fireEvent(new RemoveExpenseEvent(ExpensesView.this.selectedExpenses));
+			}
+		});
 
 		this.weeksPanel = new FlowPanel();
 		this.weeksPanel.setWidth("100%");
@@ -107,12 +126,6 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 	}
 
 	@Override
-	public HasClickHandlers getDeleteButton()
-	{
-		return this.deleteButton;
-	}
-
-	@Override
 	public Widget asWidget()
 	{
 		return this;
@@ -121,15 +134,25 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 	@Override
 	public EditExpenseEvent.HasHandlers getEditExpenseHandlers()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
 	public RemoveExpenseEvent.HasHandlers getRemoveExpenseHandlers()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this;
+	}
+
+	@Override
+	public HandlerRegistration addEditExpenseHandler(final EditExpenseEvent.Handler handler)
+	{
+		return addHandler(handler, EditExpenseEvent.TYPE);
+	}
+
+	@Override
+	public HandlerRegistration addRemoveExpenseHandler(final RemoveExpenseEvent.Handler handler)
+	{
+		return addHandler(handler, RemoveExpenseEvent.TYPE);
 	}
 
 	@Override
@@ -143,19 +166,20 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 		final Date today = this.today;
 		final int todayDay = DateUtil.dayOfWeek(today);
 
-		for (final ExpenseDTO expense : data)
+		for (final ExpenseDTO dto : data)
 		{
-			final String expenseId = expense.expenseID;
-			final Date dateTime = new Date(expense.dateTime);
-			final int dayNum = DateUtil.dayOfWeek(dateTime);
-			final int weekNum = DateUtil.getWeeksBetween(dateTime, today, todayDay);
-			expensesCoords.put(expenseId, new int[] { weekNum, dayNum });
+			final Expense expense = new Expense(dto);
+			final String expenseID = dto.expenseID;
+			final int dayNum = DateUtil.dayOfWeek(expense.dateTime);
+			final int weekNum = DateUtil.getWeeksBetween(expense.dateTime, today, todayDay);
+			expensesCoords.put(expenseID, new int[] { weekNum, dayNum });
 			Week currWeek = weeks.get(weekNum);
 			if (currWeek == null)
 			{
 				currWeek = new Week(weekNum);
 				weeks.put(weekNum, currWeek);
 			}
+
 			currWeek.days[dayNum].expenses.add(expense);
 		}
 
@@ -176,7 +200,7 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 			}
 
 			week.panel = weekPanel;
-			weekPanel.setHeader(new Label("Week #" + week.num));
+			weekPanel.setHeader(new Label(week.toString()));
 			final FlowPanel daysPanel = new FlowPanel();
 
 			final DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_FULL);
@@ -185,41 +209,58 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 			for (int d = 6; d >= 0; d--)
 			{
 				final Day day = week.days[d];
-				final List<ExpenseDTO> dayExpenses = day.expenses;
+				final List<Expense> dayExpenses = day.expenses;
 				if (!dayExpenses.isEmpty())
 				{
 					final FlexTable dayTable = new FlexTable();
 					dayTable.setWidth("100%");
 					dayTable.setStylePrimaryName("day-table");
 					day.table = dayTable;
-					final String dayTitle = dateFormat.format(new Date(dayExpenses.get(0).dateTime));
+					final String dayTitle = dateFormat.format(dayExpenses.get(0).dateTime);
 					dayTable.setText(0, 0, dayTitle);
 					final FlexCellFormatter flexCellFormatter = dayTable.getFlexCellFormatter();
 					flexCellFormatter.setColSpan(0, 0, 4);
 					flexCellFormatter.setStylePrimaryName(0, 0, "day-table-header");
 					int i = 1;
-					for (final ExpenseDTO expense : dayExpenses)
+					for (final Expense expense : dayExpenses)
 					{
-						final Date dateTime = new Date(expense.dateTime);
-						dayTable.setWidget(i, 0, new CheckBox());
-						final Label descLabel = new Label(expense.description);
-						if (expense.comment != null)
+						final Date dateTime = expense.dateTime;
+						final ExpenseDTO dto = expense.dto;
+						expense.checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>()
 						{
-							descLabel.setTitle(expense.comment);
+							@Override
+							public void onValueChange(final ValueChangeEvent<Boolean> event)
+							{
+								final Boolean checked = event.getValue();
+								final Set<ExpenseDTO> selectedExpenses = ExpensesView.this.selectedExpenses;
+								if (checked != null && checked)
+								{
+									selectedExpenses.add(expense.dto);
+								}
+								else
+								{
+									selectedExpenses.remove(expense.dto);
+								}
+								ExpensesView.this.deleteButton.setEnabled(!selectedExpenses.isEmpty());
+							}
+						});
+						dayTable.setWidget(i, 0, expense.checkBox);
+						final Label descLabel = new Label(dto.description);
+						if (dto.comment != null)
+						{
+							descLabel.setTitle(dto.comment);
 						}
 						descLabel.addDoubleClickHandler(new DoubleClickHandler()
 						{
 							@Override
 							public void onDoubleClick(final DoubleClickEvent event)
 							{
-								final EditExpenseEvent editEvent = new EditExpenseEvent(expense);
-								Window.alert("EditEvent: " + expense.expenseID + " -- " + editEvent);
-								// fire Edit event
+								fireEvent(new EditExpenseEvent(dto));
 							}
 						});
 						dayTable.setText(i, 1, timeFormat.format(dateTime));
 						dayTable.setWidget(i, 2, descLabel);
-						dayTable.setWidget(i, 3, new Label(NumberFormat.getCurrencyFormat().format(expense.amount)));
+						dayTable.setWidget(i, 3, new Label(NumberFormat.getCurrencyFormat().format(dto.amount)));
 						flexCellFormatter.setWidth(i, 0, "40px");
 						flexCellFormatter.setWidth(i, 1, "80px");
 						flexCellFormatter.setWidth(i, 3, "120px");
@@ -237,22 +278,19 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 	@Override
 	public void addExpense(final ExpenseDTO expense)
 	{
-		// TODO Auto-generated method stub
-
+		Window.alert("Added Expense: " + expense.expenseID);
 	}
 
 	@Override
 	public void updateExpense(final ExpenseDTO expense)
 	{
-		// TODO Auto-generated method stub
-
+		Window.alert("Updated Expense: " + expense.expenseID);
 	}
 
 	@Override
-	public void removeExpenses(final Collection<String> expenseIds)
+	public void removeExpenses(final Collection<String> expenseIDs)
 	{
-		// TODO Auto-generated method stub
-
+		Window.alert("Removed Expenses: " + expenseIDs);
 	}
 
 	private static class Week
@@ -268,12 +306,34 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 			this.num = num;
 		}
 
+		@Override
+		public String toString()
+		{
+			final int num = this.num;
+			if (num == 0)
+			{
+				return "This week";
+			}
+			if (num == -1)
+			{
+				return "Previous week";
+			}
+			if (num == 1)
+			{
+				return "Next week";
+			}
+			if (num < -1)
+			{
+				return "" + (-num) + " weeks ago";
+			}
+			return "In " + num + " weeks";
+		}
 	}
 
 	private static class Day
 	{
 		public final int num;
-		public final List<ExpenseDTO> expenses = new ArrayList<ExpenseDTO>();
+		public final List<Expense> expenses = new ArrayList<Expense>();
 		public FlexTable table;
 
 		public Day(final int num)
@@ -284,10 +344,18 @@ public class ExpensesView extends Composite implements ExpensesPresenter.Display
 
 	}
 
-	@Override
-	public Collection<String> getSelectedExpenses()
+	private static class Expense
 	{
-		// TODO Auto-generated method stub
-		return null;
+		public final CheckBox checkBox = new CheckBox();
+		public final ExpenseDTO dto;
+		public final Date dateTime;
+
+		public Expense(final ExpenseDTO dto)
+		{
+			super();
+			this.dto = dto;
+			this.dateTime = new Date(dto.dateTime);
+		}
+
 	}
 }

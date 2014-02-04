@@ -5,7 +5,6 @@ import org.fusesource.restygwt.client.RestServiceProxy;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.toptal.expensetracker.gwt.client.services.ExpenseTrackerService;
 import com.toptal.expensetracker.gwt.client.services.UserService;
@@ -42,12 +41,10 @@ public class ExpenseTrackerEntryPoint implements EntryPoint
 		// ((RestServiceProxy)
 		// serviceBus.userService).setDispatcher(dispatcher);
 
-		final HandlerManager eventBus = new HandlerManager(null);
-
 		final HeaderView headerView = new HeaderView(RootPanel.get("slot-header"), RootPanel.get("slot-message"));
 
-		final AppController appController = new AppController(serviceBus, eventBus, headerView);
-		appController.go(RootPanel.get("slot-body"));
+		final AppController appController = new AppController(serviceBus, headerView);
+		appController.go(RootPanel.get("slot-body"), null);
 	}
 
 }

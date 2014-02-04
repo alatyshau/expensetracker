@@ -32,17 +32,17 @@ public class RemoveExpenseEvent extends GwtEvent<RemoveExpenseEvent.Handler>
 	@Override
 	protected void dispatch(final RemoveExpenseEvent.Handler handler)
 	{
-		handler.onEditExpense(this);
+		handler.onRemoveExpense(this);
 	}
 
 	public interface Handler extends EventHandler
 	{
-		void onEditExpense(RemoveExpenseEvent event);
+		void onRemoveExpense(RemoveExpenseEvent event);
 	}
 
 	public interface HasHandlers extends com.google.gwt.event.shared.HasHandlers
 	{
-		HandlerRegistration addEditExpenseHandler(RemoveExpenseEvent.Handler handler);
+		HandlerRegistration addRemoveExpenseHandler(RemoveExpenseEvent.Handler handler);
 	}
 
 }

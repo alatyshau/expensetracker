@@ -91,6 +91,12 @@ public class Utils
 		return (int) ((bTime - aTime + adjust) / (24 * 60 * 60 * 1000));
 	}
 
+	public static boolean isBetween(final BigDecimal amount, final long low, final long high)
+	{
+
+		return amount.compareTo(BigDecimal.valueOf(low)) == 1 && amount.compareTo(BigDecimal.valueOf(high)) == -1;
+	}
+
 	public static DateFormat getDateFormat()
 	{
 		SoftReference<DateFormat> ref = tl1.get();
@@ -185,4 +191,5 @@ public class Utils
 					+ ". User: " + ctx.getUserId());
 		}
 	}
+
 }

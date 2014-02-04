@@ -1,16 +1,23 @@
 package com.toptal.expensetracker.services.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.toptal.expensetracker.common.InternalException;
 import com.toptal.expensetracker.dto.ExpenseDTO;
 import com.toptal.expensetracker.services.dao.ExpenseTrackingDAO;
 
@@ -33,7 +40,31 @@ public class MySQLExpenseTrackingDAO implements ExpenseTrackingDAO
 	@Override
 	public ExpenseDTO insertExpense(final String userId, final ExpenseDTO expense)
 	{
-		throw new InternalException("not implemented");
+		final KeyHolder keyHolder = new GeneratedKeyHolder();
+		final String sql = "INSERT INTO expense (dateTime, description, amount, comment, userID) VALUES (?, ?, ?, ?, ?)";
+		final int result = this.jdbcTemplate.update(new PreparedStatementCreator()
+		{
+			@Override
+			public PreparedStatement createPreparedStatement(final Connection conn) throws SQLException
+			{
+				final PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				statement.setTimestamp(1, new Timestamp(expense.getDateTime().getTime()));
+				statement.setString(2, expense.getDescription());
+				statement.setBigDecimal(3, expense.getAmount());
+				statement.setString(4, expense.getComment());
+				statement.setString(5, userId);
+				return statement;
+			}
+		}, keyHolder);
+		if (result > 0)
+		{
+			expense.setExpenseID(keyHolder.getKey().longValue());
+			return expense;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	@Override
@@ -48,13 +79,45 @@ public class MySQLExpenseTrackingDAO implements ExpenseTrackingDAO
 	@Override
 	public ExpenseDTO updateExpense(final String userId, final Long expenseId, final ExpenseDTO expense)
 	{
-		throw new InternalException("not implemented");
+		final String sql = "UPDATE expense SET dateTime=?, description=?, amount=?, comment=? WHERE expenseID=? AND userID=?";
+		final int result = this.jdbcTemplate.update(new PreparedStatementCreator()
+		{
+			@Override
+			public PreparedStatement createPreparedStatement(final Connection conn) throws SQLException
+			{
+				final PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				statement.setTimestamp(1, new Timestamp(expense.getDateTime().getTime()));
+				statement.setString(2, expense.getDescription());
+				statement.setBigDecimal(3, expense.getAmount());
+				statement.setString(4, expense.getComment());
+				statement.setLong(5, expenseId);
+				statement.setString(6, userId);
+				return statement;
+			}
+		});
+		return result > 0 ? expense : null;
 	}
 
 	@Override
 	public void deleteExpenses(final String userId, final List<Long> expenseIds)
 	{
-		throw new InternalException("not implemented");
+		final String sql = "DELETE FROM expense WHERE expenseID=? AND userID=?";
+		this.jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter()
+		{
+
+			@Override
+			public void setValues(final PreparedStatement ps, final int i) throws SQLException
+			{
+				ps.setLong(1, expenseIds.get(i));
+				ps.setString(2, userId);
+			}
+
+			@Override
+			public int getBatchSize()
+			{
+				return expenseIds.size();
+			}
+		});
 	}
 
 	private static final class ExpenseDTOMapper implements RowMapper<ExpenseDTO>
